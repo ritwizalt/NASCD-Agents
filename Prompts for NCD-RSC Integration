@@ -68,6 +68,11 @@ Ask the user to specify:
   - Ensuring all dependencies are properly built
   - Checking for naming conflicts or missing types
 
+**STEP 9: Dummy function addition for actual implementation
+- From the polaris directory, go to src/rubrik/feldspar/svc/.
+- Based on the rpc we added we need to add a dummy function with just a not implemented log.
+- We determine based on the rpc whether it fits in one of the existing files or does it need a new file.
+- We create the file if needed and append the dummy function there as done in the PR
 **Verification Requirements:**
 - After each step, present results to the user and wait for confirmation
 - Allow user to request modifications or direction changes at any point
