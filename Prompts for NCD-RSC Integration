@@ -1,0 +1,81 @@
+### Creating boilerplate code for sdmain.
+
+
+You are tasked with creating GraphQL endpoints by wrapping APIs from the System Manager service in the Mesa repository. This involves creating Feldspar proto definitions, implementing RBAC policies, and generating GraphQL schemas. Follow these steps sequentially, verifying with the user after each step and incorporating their feedback before proceeding.
+
+Reference implementation: Use PR #75777 (https://github.com/scaledata/sdmain/pull/75777) as a template. Retrieve the changes using the `gh` CLI tool to understand the required code patterns.
+
+**STEP 0: API Identification**
+Ask the user to specify:
+- The exact API endpoint name they want to wrap
+- Any specific requirements or constraints for the GraphQL implementation
+
+**STEP 1: Mesa Repository API Discovery**
+- Navigate to `/Users/ritwizsinha/mesa/internal/mantle/applications/services/sysmanager/models/resources.go`
+- Search for the specified API endpoint definition
+- If the API is not found, terminate the process and inform the user
+- Document the API structure and present findings to the user
+
+**STEP 2: REST API Mapping Analysis**
+- Examine `/Users/ritwizsinha/mesa/internal/mantle/applications/services/sysmanager/restapi/resources.go`
+- Locate the mapping function for the identified API
+- Analyze the function implementation to determine:
+  - Input parameters (types, validation rules, required/optional fields)
+  - Output response structure (return types, error handling)
+  - Any middleware or authentication requirements
+- Present the extracted input/output specifications to the user for validation and modifications
+
+**STEP 3: Feldspar Proto Definition**
+- Edit `/Users/ritwizsinha/sdmain/polaris/src/rubrik/feldspar/proto/feldspar.proto`
+- Create RPC definition with appropriate:
+  - Request message structure matching the API input
+  - Response message structure matching the API output
+  - Proper field numbering and types following proto3 conventions
+- Follow existing patterns in the proto file for consistency
+
+**STEP 4: Build Environment Setup**
+- Navigate to the polaris directory: `cd /Users/ritwizsinha/sdmain/polaris`
+- Activate build environment: `source .buildenv/bin/activate`
+
+**STEP 5: Proto Compilation**
+- Navigate to proto directory: `cd src/rubrik/feldspar/proto`
+- Execute: `make all`
+- If compilation errors occur:
+  - Analyze error messages
+  - Fix proto file syntax/structure issues
+  - Retry compilation until successful
+
+**STEP 6: API Generation**
+- From polaris directory, run: `sp-api-v2-generate --directory src/rubrik/feldspar/proto`
+- Address any generation errors by:
+  - Reviewing proto file for missing imports or incorrect field types
+  - Ensuring proper message naming conventions
+  - Fixing any dependency issues
+
+**STEP 7: RBAC Implementation**
+- Modify files in `polaris/src/rubrik/api-server/app/services/feldspar/rbac/`:
+  - `FeldsparRbacPolicies.scala`: Add interface definition for the new RPC
+  - `FeldsparRbacPoliciesImpl.scala`: Implement RBAC logic for the new endpoint
+  - `FeldsparRbacTags.scala`: Add appropriate RBAC tags if needed
+- Create comprehensive tests in `FeldsparRbacPoliciesTest.scala` following existing patterns
+- Present all RBAC changes to the user for review and approval before proceeding
+- Run tests using: `bazel test //rubrik/api-server/test/apps/feldspar/rbac:feldspar_rbac_policies_test`
+
+**STEP 8: GraphQL Schema Generation**
+- From polaris directory, execute: `sp-gql-schema`
+- Resolve any schema generation errors by:
+  - Verifying proto definitions are correct
+  - Ensuring all dependencies are properly built
+  - Checking for naming conflicts or missing types
+
+**Verification Requirements:**
+- After each step, present results to the user and wait for confirmation
+- Allow user to request modifications or direction changes at any point
+- Ensure all build commands succeed before proceeding to the next step
+- Validate that the final GraphQL endpoint works as expected
+
+**Error Handling:**
+- For each build/generation step, capture and analyze error output
+- Provide specific solutions for common issues (proto syntax, dependency problems, etc.)
+- If unable to resolve errors automatically, present them to the user with suggested fixes
+
