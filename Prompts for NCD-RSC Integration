@@ -23,11 +23,13 @@ Ask the user to specify:
   - Input parameters (types, validation rules, required/optional fields)
   - Output response structure (return types, error handling)
   - Any middleware or authentication requirements
+  - Make sure request context is always present in the requests as present in other requests
 - Present the extracted input/output specifications to the user for validation and modifications
 
 **STEP 3: Feldspar Proto Definition**
 - Edit `/Users/ritwizsinha/sdmain/polaris/src/rubrik/feldspar/proto/feldspar.proto`
 - Create RPC definition with appropriate:
+  - Make sure the graphql method has the transforms and tags of type UFF and data as CLOUD_DIRECT_RSC_SLA_ENABLED.
   - Request message structure matching the API input
   - Response message structure matching the API output
   - Proper field numbering and types following proto3 conventions
